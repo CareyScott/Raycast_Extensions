@@ -82,15 +82,25 @@ Each stage updates the UI with progress percentage.
 
 ## Claude CLI Integration
 
-The extension executes Claude CLI as a subprocess:
+The extension uses **local Claude Code CLI** via subprocess execution:
 
-```bash
-cd <extension-directory> && claude --yes "<prompt>"
-```
+- **Path Resolution**: Automatically finds Claude CLI in common locations:
+  - `/opt/homebrew/bin/claude` (Homebrew on Apple Silicon)
+  - `/usr/local/bin/claude` (Homebrew on Intel)
+  - `/usr/bin/claude` (System installation)
+  - Falls back to `which claude` if not found
+- **Environment**: Extends PATH to include common bin directories
+- **Execution**: Uses `cd <dir> && claude --yes "<prompt>"` pattern
+- **Verification**: Uses `test -x` to verify executable exists
+- **Error Handling**: Provides detailed error messages with:
+  - ENOENT detection for missing CLI
+  - Stack traces and stderr/stdout output
+  - Resolved path and command information
+- **Timeout**: 10-minute timeout with user confirmation prompt
 
 The prompt includes:
 - User's requirements
-- Full codebase context
+- Full codebase context from analyzer
 - Specific instructions about structure and patterns
 - Reference to existing extensions
 

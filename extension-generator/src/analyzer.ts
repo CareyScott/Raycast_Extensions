@@ -11,8 +11,7 @@ import { CodebaseContext, ExtensionInfo } from "./types";
  * Get the project root directory (parent of current extension)
  */
 export function getProjectRoot(): string {
-  // Current extension is in extension-generator/, parent is project root
-  return path.resolve(__dirname, "../..");
+  return "/Users/scottcarey/Developer/RaycastExtensions";
 }
 
 /**
@@ -44,9 +43,7 @@ function getDirectoryTree(dirPath: string, prefix = "", maxDepth = 3, currentDep
   let tree = "";
   try {
     const items = fs.readdirSync(dirPath);
-    const filteredItems = items.filter(
-      (item) => !item.startsWith(".") && item !== "node_modules" && item !== "dist"
-    );
+    const filteredItems = items.filter((item) => !item.startsWith(".") && item !== "node_modules" && item !== "dist");
 
     filteredItems.forEach((item, index) => {
       const isLast = index === filteredItems.length - 1;

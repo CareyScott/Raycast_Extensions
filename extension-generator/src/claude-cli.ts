@@ -10,32 +10,67 @@ import * as fs from "fs";
 const execAsync = promisify(exec);
 
 /**
- * Find Claude CLI executable path
+ * Resolve the full path to Claude CLI
  */
-export async function findClaudePath(): Promise<string> {
-  // Check common installation paths
+async function resolveClaudePath(claudePath: string = "claude"): Promise<string> {
+  // If it's already an absolute path, use it
+  if (claudePath.startsWith("/")) {
+    return claudePath;
+  }
+
+  // Try to find claude in common locations
   const commonPaths = ["/opt/homebrew/bin/claude", "/usr/local/bin/claude", "/usr/bin/claude"];
 
+  // Extended environment with common bin directories
+  const env = {
+    ...process.env,
+    PATH: `${process.env.PATH}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin`,
+  };
+
+  // Check common paths first
   for (const path of commonPaths) {
-    if (fs.existsSync(path)) {
+    try {
+      await execAsync(`test -x "${path}"`, { timeout: 1000, env });
       return path;
+    } catch {
+      // Continue to next path
     }
   }
 
-  // Try to find using 'which' command
+  // Try using 'which' to find it
   try {
-    const { stdout } = await execAsync("which claude");
+    const { stdout } = await execAsync(`which ${claudePath}`, { timeout: 2000, env });
     const path = stdout.trim();
-    if (path && fs.existsSync(path)) {
+    if (path) {
       return path;
     }
   } catch {
-    // which command failed, continue
+    // Fall back to original path
   }
 
-  throw new Error(
-    "Claude CLI not found. Please install Claude Code from https://claude.com/code or specify the path in preferences."
-  );
+  return claudePath;
+}
+
+/**
+ * Find Claude CLI executable path
+ */
+export async function findClaudePath(): Promise<string> {
+  const resolvedPath = await resolveClaudePath("claude");
+
+  // Verify the path exists and is executable
+  const env = {
+    ...process.env,
+    PATH: `${process.env.PATH}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin`,
+  };
+
+  try {
+    await execAsync(`"${resolvedPath}" --version`, { timeout: 5000, env });
+    return resolvedPath;
+  } catch (error) {
+    throw new Error(
+      `Claude CLI not found at: ${resolvedPath}\nPlease install Claude Code from https://claude.com/code or specify the path in preferences.`
+    );
+  }
 }
 
 /**
@@ -48,22 +83,30 @@ export async function executeClaude(
 ): Promise<string> {
   const claudePath = await findClaudePath();
 
-  // Extended PATH to include common binary locations
-  const extendedPath = `${process.env.PATH}:/opt/homebrew/bin:/usr/local/bin:/usr/bin`;
+  // Extended environment with common binary locations
+  const env = {
+    ...process.env,
+    PATH: `${process.env.PATH}:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin`,
+  };
 
   onProgress?.("Preparing Claude CLI execution...");
 
   try {
     // Execute Claude CLI with the prompt
-    // Using --yes flag to auto-confirm, and --format json for structured output
-    const command = `cd "${workingDir}" && "${claudePath}" --yes "${prompt.replace(/"/g, '\\"')}"`;
+    // Using --dangerously-skip-permissions to bypass permission prompts for automation
+    const command = `cd "${workingDir}" && "${claudePath}" --dangerously-skip-permissions "${prompt.replace(/"/g, '\\"')}"`;
 
     onProgress?.("Executing Claude CLI...");
 
     const { stdout, stderr } = await execAsync(command, {
-      env: { ...process.env, PATH: extendedPath },
+      env,
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer for large outputs
+      timeout: 600000, // 10 minute timeout
     });
+
+    if (stderr && stderr.includes("error") && !stdout) {
+      throw new Error(`Claude CLI error: ${stderr}`);
+    }
 
     if (stderr) {
       console.warn("Claude CLI stderr:", stderr);
@@ -73,8 +116,38 @@ export async function executeClaude(
 
     return stdout;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Claude CLI execution failed: ${errorMessage}`);
+    if (error instanceof Error) {
+      if (error.message.includes("ENOENT") || error.message.includes("command not found")) {
+        throw new Error(
+          `Claude Code CLI not found at: ${claudePath}\nPlease install it from https://claude.ai/code or check the path.`
+        );
+      }
+
+      // Build detailed error message
+      let detailedError = `Failed to generate extension:\n\nError: ${error.message}`;
+
+      // Include stack trace if available
+      if (error.stack) {
+        detailedError += `\n\nStack Trace:\n${error.stack}`;
+      }
+
+      // Include stderr and stdout if available (from exec error)
+      const execError = error as any;
+      if (execError.stderr) {
+        detailedError += `\n\nStderr:\n${execError.stderr}`;
+      }
+      if (execError.stdout) {
+        detailedError += `\n\nStdout:\n${execError.stdout}`;
+      }
+
+      // Include command info
+      detailedError += `\n\nClaude Path: ${claudePath}`;
+      detailedError += `\n\nWorking Directory: ${workingDir}`;
+      detailedError += `\n\nCommand: cd "${workingDir}" && "${claudePath}" --dangerously-skip-permissions "<prompt>"`;
+
+      throw new Error(detailedError);
+    }
+    throw new Error("Failed to generate extension: Unknown error");
   }
 }
 
@@ -86,6 +159,18 @@ export interface ClaudeGenerationResult {
   success: boolean;
   message: string;
   filesCreated: string[];
+}
+
+/**
+ * Check if Claude Code CLI is available
+ */
+export async function checkClaudeAvailable(): Promise<boolean> {
+  try {
+    await findClaudePath();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
