@@ -1,0 +1,68 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "cleaner-payment-tracker",
+  "title": "Cleaner Payment Tracker",
+  "description": "Track cleaning hours and payments with automatic €5 rounding",
+  "icon": "icon.png",
+  "author": "your-username",
+  "categories": [
+    "Finance",
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Track Cleaner Payments",
+      "subtitle": "Manage hours and payments",
+      "description": "Track cleaning hours, calculate payments with €5 rounding",
+      "mode": "view"
+    },
+    {
+      "name": "quick-add",
+      "title": "Quick Add Hours",
+      "subtitle": "Add hours worked",
+      "description": "Quickly add hours worked",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "hours",
+          "type": "text",
+          "placeholder": "3.5",
+          "required": true
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "placeholder": "Notes (optional)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "title": "Payment Status",
+      "subtitle": "Check current balance",
+      "description": "View current balance and unpaid hours",
+      "mode": "no-view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.64.0",
+    "date-fns": "^3.0.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.8",
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

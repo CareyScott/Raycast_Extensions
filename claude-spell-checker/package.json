@@ -1,0 +1,131 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "claude-spell-checker",
+  "title": "Claude Spell Checker",
+  "description": "Multilingual spell checking powered by Claude Code with diff view",
+  "icon": "icon.png",
+  "author": "your-username",
+  "categories": [
+    "Productivity",
+    "Developer Tools"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "spell-check",
+      "title": "Spell Check with Claude",
+      "subtitle": "Check spelling and grammar",
+      "description": "Check spelling and grammar in multiple languages using Claude Code",
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "useAutoLanguage",
+          "type": "checkbox",
+          "required": false,
+          "title": "Auto-detect Language",
+          "description": "Automatically detect the language (recommended)",
+          "default": true,
+          "label": "Enable automatic language detection"
+        }
+      ]
+    },
+    {
+      "name": "spell-check-clipboard",
+      "title": "Spell Check Clipboard",
+      "subtitle": "Check text from clipboard",
+      "description": "Automatically check spelling of text from clipboard",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "defaultLanguage",
+      "type": "dropdown",
+      "required": false,
+      "title": "Default Language",
+      "description": "Default language for spell checking",
+      "default": "auto",
+      "data": [
+        {
+          "title": "Auto-detect",
+          "value": "auto"
+        },
+        {
+          "title": "English",
+          "value": "en"
+        },
+        {
+          "title": "Spanish",
+          "value": "es"
+        },
+        {
+          "title": "French",
+          "value": "fr"
+        },
+        {
+          "title": "German",
+          "value": "de"
+        },
+        {
+          "title": "Italian",
+          "value": "it"
+        },
+        {
+          "title": "Portuguese",
+          "value": "pt"
+        },
+        {
+          "title": "Dutch",
+          "value": "nl"
+        },
+        {
+          "title": "Polish",
+          "value": "pl"
+        },
+        {
+          "title": "Russian",
+          "value": "ru"
+        },
+        {
+          "title": "Chinese",
+          "value": "zh"
+        },
+        {
+          "title": "Japanese",
+          "value": "ja"
+        },
+        {
+          "title": "Korean",
+          "value": "ko"
+        }
+      ]
+    },
+    {
+      "name": "claudePath",
+      "type": "textfield",
+      "required": false,
+      "title": "Claude Code Path",
+      "description": "Path to Claude Code executable (leave empty for default 'claude')",
+      "default": "claude",
+      "placeholder": "/usr/local/bin/claude"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.64.0",
+    "@raycast/utils": "^1.10.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.8",
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
