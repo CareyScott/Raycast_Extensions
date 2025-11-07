@@ -117,9 +117,23 @@ export default function Command() {
     });
 
     try {
+      // Get current statuses to show which ones were skipped
+      const currentStatuses = await getAllServiceStatuses(BV_SERVICES);
+      const alreadyRunning = currentStatuses.filter((s) => s.running).map((s) => s.name);
+
       await startAllServices(BV_SERVICES);
+
+      const newStatuses = await getAllServiceStatuses(BV_SERVICES);
+      const nowRunning = newStatuses.filter((s) => s.running).length;
+
       toast.style = Toast.Style.Success;
-      toast.title = "All services started successfully";
+      if (alreadyRunning.length > 0) {
+        toast.title = `Started services (${alreadyRunning.length} already running)`;
+        toast.message = `${nowRunning}/${BV_SERVICES.length} services running`;
+      } else {
+        toast.title = "All services started successfully";
+        toast.message = `${nowRunning}/${BV_SERVICES.length} services running`;
+      }
       await loadStatuses();
     } catch (error) {
       toast.style = Toast.Style.Failure;

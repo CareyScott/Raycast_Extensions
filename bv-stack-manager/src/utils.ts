@@ -424,10 +424,18 @@ export async function restartService(service: BVService): Promise<void> {
 export async function startAllServices(services: BVService[]): Promise<void> {
   for (const service of services) {
     try {
+      // Check if service is already running
+      const isRunning = await isPortInUse(service.port);
+      if (isRunning) {
+        console.log(`${service.displayName} is already running, skipping...`);
+        continue; // Skip this service
+      }
+
       await startService(service);
     } catch (error) {
       console.error(`Failed to start ${service.displayName}:`, error);
-      throw error;
+      // Don't throw - continue with other services
+      // Only log the error so other services can still start
     }
   }
 }
