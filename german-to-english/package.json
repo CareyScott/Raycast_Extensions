@@ -1,0 +1,46 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "german-to-english",
+  "title": "German to English Translator",
+  "description": "Professional German translations for English words, phrases, and sentences tailored for FinTech app design",
+  "icon": "icon.png",
+  "author": "scottcarey",
+  "categories": [
+    "Productivity",
+    "Developer Tools"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "translate",
+      "title": "Translate to German",
+      "subtitle": "English to German for FinTech",
+      "description": "Translate English text to German with FinTech context",
+      "mode": "view"
+    },
+    {
+      "name": "quick-translate",
+      "title": "Quick Translate",
+      "subtitle": "Translate from clipboard",
+      "description": "Translate clipboard text to German and copy result",
+      "mode": "no-view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.64.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.8",
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

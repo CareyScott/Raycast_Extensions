@@ -93,8 +93,9 @@ export async function executeClaude(
 
   try {
     // Execute Claude CLI with the prompt
-    // Using --dangerously-skip-permissions to bypass permission prompts for automation
-    const command = `cd "${workingDir}" && "${claudePath}" --dangerously-skip-permissions "${prompt.replace(/"/g, '\\"')}"`;
+    // Using echo to pipe prompt via stdin to avoid shell escaping issues and command line length limits
+    // Using --print flag for non-interactive output
+    const command = `cd "${workingDir}" && echo ${JSON.stringify(prompt)} | "${claudePath}" --print`;
 
     onProgress?.("Executing Claude CLI...");
 
@@ -143,7 +144,7 @@ export async function executeClaude(
       // Include command info
       detailedError += `\n\nClaude Path: ${claudePath}`;
       detailedError += `\n\nWorking Directory: ${workingDir}`;
-      detailedError += `\n\nCommand: cd "${workingDir}" && "${claudePath}" --dangerously-skip-permissions "<prompt>"`;
+      detailedError += `\n\nCommand: cd "${workingDir}" && echo <prompt> | "${claudePath}" --print`;
 
       throw new Error(detailedError);
     }

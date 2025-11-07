@@ -11,7 +11,7 @@ import { CodebaseContext, ExtensionInfo } from "./types";
  * Get the project root directory (parent of current extension)
  */
 export function getProjectRoot(): string {
-  return "/Users/scottcarey/Developer/RaycastExtensions";
+  return "/Users/scottcarey/Developer/Raycast Extensions";
 }
 
 /**
