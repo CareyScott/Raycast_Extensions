@@ -1,0 +1,2 @@
+This is a placeholder for the icon. You should replace this with an actual PNG icon.
+For now, I'll create a simple icon using ImageMagick or you can add one manually.

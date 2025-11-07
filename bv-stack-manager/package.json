@@ -1,0 +1,58 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "bv-stack-manager",
+  "title": "BV Stack Manager",
+  "description": "Manage BV stack services - start, stop, and restart individual services or the entire stack",
+  "icon": "command-icon.png",
+  "author": "scottcarey",
+  "categories": [
+    "Developer Tools"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Manage BV Services",
+      "description": "View and control all BV stack services",
+      "mode": "view"
+    },
+    {
+      "name": "start-all",
+      "title": "Start All BV Services",
+      "description": "Start all BV stack services at once",
+      "mode": "no-view"
+    },
+    {
+      "name": "stop-all",
+      "title": "Stop All BV Services",
+      "description": "Stop all BV stack services at once",
+      "mode": "no-view"
+    },
+    {
+      "name": "status",
+      "title": "BV Stack Status",
+      "description": "Show quick status of all services",
+      "mode": "no-view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.83.2",
+    "@raycast/utils": "^1.17.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
